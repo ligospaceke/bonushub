@@ -1,7 +1,7 @@
 import { esc, money, badge, get, post, route, actions, forms, go, cart, store, toast, field, selectField, textField, kv, emptyState, plural, kes, fromMinor, ApiError } from '../lib.js';
 
 import { artFor, heroScene, crateOutline } from '../art.js';
-import { productCard, thumb, priceOf, I } from './shop.js';
+import { productCard, thumb, priceOf, I, featuredDeck, initDeck } from './shop.js';
 export { thumb, priceOf, productCard };
 const skel = (n) => Array.from({ length: n }, () => '<div class="card"><div class="skeleton" style="height:120px"></div></div>').join('');
 
@@ -59,13 +59,14 @@ route('/', async () => {
   <section class="section" style="padding-top:36px"><div class="section-head rv"><h2>Shop by category</h2><a href="#/categories">All categories</a></div>
     <div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">${cats.categories.map((c, i) => `<a class="card lift cat-card rv" style="--i:${i % 5}" href="#/products?category=${esc(c.slug)}"><div class="art-wrap">${artFor({ slug: c.slug, name: c.name })}</div><div class="cc-body"><span class="n">${String(i + 1).padStart(2, '0')}</span><b>${esc(c.name)}</b><span class="small muted">${plural(c.productCount, 'product', 'products')}</span></div></a>`).join('')}</div></section>
   <section class="section has-grid"><div class="section-head rv"><h2>Featured products</h2><a href="#/products">View all products</a></div>
-    ${list.length ? `<div class="feat">${list.map((p, i) => { const below = list.length - 5, wide = i >= 5 && below > 0 && 4 % below === 0 ? `grid-column:span ${4 / below}` : ''; return productCard(p, { cls: `rv${i === 0 ? ' spot' : ''}`, i: i % 4, extra: wide }); }).join('')}</div>` : emptyState('No products yet', 'Approved sellers will list products here.', '<a class="btn btn-accent" href="#/register?role=seller">Become a seller</a>')}</section>
+    ${list.length ? featuredDeck(list)
+    : emptyState('No products yet', 'Approved sellers will list products here.', '<a class="btn btn-accent" href="#/register?role=seller">Become a seller</a>')}</section>
   <section class="section"><div class="section-head rv"><h2>Verified suppliers</h2><a href="#/suppliers">Browse suppliers</a></div>
     ${sellers.sellers.length ? `<div class="grid">${sellers.sellers.slice(0, 6).map((s, i) => `<a class="card lift rv" style="--i:${i % 3};color:var(--text)" href="#/supplier/${esc(s.slug)}"><div class="row"><div class="mono-tile" aria-hidden="true">${esc(initials(s.name))}</div><div class="grow"><b>${esc(s.name)}</b><div class="small muted">${esc(s.town || s.region || 'Kenya')}</div></div></div><div class="row mt"><span class="badge ok">Verified</span>${s.founding ? '<span class="badge accent">Founding Seller</span>' : ''}<span class="badge">${plural(s.productCount, 'product', 'products')}</span></div></a>`).join('')}</div>` : emptyState('Suppliers will appear here once approved.')}</section>
   <section class="section"><h2 class="mb rv">How it works</h2><div class="route-steps"><span class="rv-line"></span>
     ${[['Register', 'Create a buyer or seller account. Sellers are approved before they list.'], ['Find or quote', 'Add fixed-price items to your cart, or request a quotation for machinery and bulk orders.'], ['Pay securely', 'Pay with M-Pesa or card. Your order is confirmed only after the payment is verified.'], ['Track and receive', 'Follow dispatch and delivery, confirm receipt and keep your records.']].map(([h, t], i) => `<div class="card rv" style="--i:${i + 1}"><div class="step-n">${i + 1}</div><h3>${h}</h3><p class="small muted mt">${t}</p></div>`).join('')}</div></section>
   <section class="section"><div class="cta-band rv">${crateOutline()}<div style="flex:1 1 420px"><h2>Sell on BonasHub. No sale, no commission.</h2><p class="mt">Free registration, free listings, no subscription. The first 50 approved sellers get a 3% introductory commission for six months, then the standard 5%.</p></div><a class="btn btn-primary btn-lg" href="#/register?role=seller">Become a seller</a></div></section></div>`,
-  after() { sceneParallax(); revealOnScroll(); initSlider(); } };
+  after() { sceneParallax(); revealOnScroll(); initSlider(); initDeck(); } };
 }, { skeleton: false });
 
 forms.search = (v) => { const q = new URLSearchParams(); if (v.q?.trim()) q.set('q', v.q.trim()); if (v.category) q.set('category', v.category); go('/products' + (q.toString() ? '?' + q : '')); };

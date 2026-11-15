@@ -235,7 +235,7 @@ route('/product/:id', async ({ params }) => {
         ${G.media.length > 1 ? `<ul class="gal-thumbs" role="list">${G.media.map((m, i) => thumbHTML(m, p, i)).join('')}</ul>` : ''}</div>
       <div class="pdp-info"><div class="row"><span class="tag">${esc(p.category.name)}</span>${p.seller.founding ? '<span class="tag accent">Founding Seller</span>' : ''}<span class="tag ok">${I.check} Verified supplier</span></div>
         <h1>${esc(p.name)}</h1>${p.brand ? `<p class="muted">Brand: ${esc(p.brand)}</p>` : ''}
-        <a class="supplier" href="#/supplier/${esc(p.seller.slug)}"><span class="mono-tile sm" aria-hidden="true">${esc(initials(p.seller.name))}</span><span><b>${esc(p.seller.name)}</b><span class="small muted">${esc(p.seller.town || p.seller.region || 'Kenya')}</span></span><span class="go">View supplier ${I.arrow}</span></a>
+        <a class="supplier" href="#/supplier/${esc(p.seller.slug)}"><span class="mono-tile sm" aria-hidden="true">${esc(initials(p.seller.name))}</span><span><b>${esc(p.seller.name)}</b><span class="small muted">${esc(p.seller.town || p.seller.region || 'Kenya')}</span></span><span class="go"><span class="go-t">View supplier</span> ${I.arrow}</span></a>
         ${buy}
         <button type="button" class="btn btn-outline block" data-act="cmp-btn" data-cmp-btn data-id="${esc(p.id)}" data-name="${esc(p.name)}" data-cat="${esc(p.category.slug)}" data-img="${esc(img0)}" aria-pressed="${compare.has(p.id)}">${I.compare} <span>${compare.has(p.id) ? 'In comparison' : 'Add to compare'}</span></button>
         <ul class="trust-list"><li>${I.check} Pay with M-Pesa or card inside BonasHub</li><li>${I.check} An order is marked paid only when the payment is verified</li><li>${I.check} Track dispatch and delivery from your account</li></ul></div></div>
@@ -289,3 +289,52 @@ route('/compare', async ({ query }) => {
 });
 actions['cmp-add'] = (el) => { cart.add(el.dataset.id, parseInt(el.dataset.moq, 10)); toast('Added to your cart.', 'ok'); announce(`${el.dataset.name} added to your cart.`); };
 actions['cmp-drop'] = (el) => { compare.remove(el.dataset.id); const ids = compare.items().map((x) => x.id); go('/compare' + (ids.length ? '?ids=' + ids.join(',') : '')); };
+
+// ---------------------------------------------------------------- featured deck: a pile of cards. The top card flies off, the next one comes forward.
+const deckCard = (p, i) => {
+  const st = stockText[p.stockStatus] || [String(p.stockStatus || '').replace(/_/g, ' '), ''];
+  const img = p.images?.[0] && !/\{n\}/.test(p.images[0]) && !isVideo(p.images[0]) ? p.images[0] : '';
+  return `<article class="dcard" data-i="${i}" role="group" aria-roledescription="slide"><a class="dcard-media" href="#/product/${esc(p.id)}" tabindex="-1" aria-hidden="true">${thumb(p)}</a>
+    <div class="dcard-body"><span class="tiny muted">${esc(p.category?.name)}</span><h3><a href="#/product/${esc(p.id)}" class="dlink">${esc(p.name)}</a></h3>
+      <span class="small muted">${esc(p.seller?.name)}${p.seller?.town ? ' · ' + esc(p.seller.town) : ''}</span>
+      <div class="dprice"><span class="price xl">${priceOf(p)}</span><span class="tiny muted">${p.priceModel === 'fixed' ? `per ${esc(p.unit)} · MOQ ${p.moq}` : 'Delivery negotiated'}</span></div>
+      <div class="row">${p.seller?.founding ? '<span class="tag accent">Founding Seller</span>' : ''}<span class="stock ${st[1]}">${st[0]}</span></div>
+      <div class="dact"><a class="btn btn-primary dlink" href="#/product/${esc(p.id)}">${p.priceModel === 'quote' ? 'Request quotation' : 'View product'} ${I.arrow}</a>
+        <label class="cmp"><input type="checkbox" class="dlink" data-cmp="${esc(p.id)}" data-name="${esc(p.name)}" data-cat="${esc(p.category?.slug || '')}" data-img="${esc(img)}" ${compare.has(p.id) ? 'checked' : ''}><span>Compare<span class="sr"> ${esc(p.name)}</span></span></label></div></div></article>`;
+};
+export const featuredDeck = (list) => `<div class="deck" id="deck" role="region" aria-roledescription="carousel" aria-label="Featured products" tabindex="0"><div class="deck-stage">${list.map(deckCard).join('')}</div>
+  <div class="deck-ctl"><button type="button" class="icon-btn" data-act="deck-prev" aria-label="Previous product">${I.left}</button><span class="deck-count" id="deck-count" aria-live="polite"></span><button type="button" class="icon-btn" data-act="deck-next" aria-label="Next product">${I.right}</button></div></div>`;
+const D = { cur: 0, busy: false };
+const deckEls = () => [...document.querySelectorAll('#deck .dcard')];
+function deckRender() {
+  const els = deckEls(), n = els.length;
+  els.forEach((el, i) => { const pos = (i - D.cur + n) % n; el.dataset.pos = pos > 3 ? 3 : pos; el.setAttribute('aria-hidden', String(pos !== 0)); el.setAttribute('aria-label', `${i + 1} of ${n}`); el.querySelectorAll('.dlink').forEach((x) => (x.tabIndex = pos === 0 ? 0 : -1)); el.style.zIndex = String(n - pos); });
+  const c = document.getElementById('deck-count'); if (c) c.textContent = `${D.cur + 1} of ${n}`;
+}
+const REDUCED = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+function deckTo(delta) {
+  const els = deckEls(), n = els.length; if (n < 2 || D.busy) return; D.busy = true;
+  if (delta > 0) {
+    const top = els[D.cur]; top.classList.add('fly'); D.cur = (D.cur + delta) % n; deckRender(); top.dataset.pos = 3;
+    setTimeout(() => { top.classList.add('snap'); top.classList.remove('fly'); void top.offsetWidth; top.classList.remove('snap'); D.busy = false; }, REDUCED() ? 0 : 480);
+  } else {
+    const back = els[(D.cur - 1 + n) % n]; back.classList.add('snap', 'fly'); void back.offsetWidth; back.classList.remove('snap'); D.cur = (D.cur - 1 + n) % n; deckRender(); back.classList.remove('fly');
+    setTimeout(() => (D.busy = false), REDUCED() ? 0 : 480);
+  }
+  announce(`Product ${D.cur + 1} of ${n}`);
+}
+actions['deck-next'] = () => deckTo(1); actions['deck-prev'] = () => deckTo(-1);
+export function initDeck() {
+  const deck = document.getElementById('deck'); if (!deck) return; D.cur = 0; D.busy = false; deckRender();
+  deck.addEventListener('keydown', (e) => { if (e.target !== deck) return; if (e.key === 'ArrowRight') { deckTo(1); e.preventDefault(); } if (e.key === 'ArrowLeft') { deckTo(-1); e.preventDefault(); } });
+  // tap a card in the pile to bring it forward; swipe the top card to send it away
+  let x0 = null, moved = false;
+  deck.addEventListener('pointerdown', (e) => { x0 = e.clientX; moved = false; });
+  deck.addEventListener('pointermove', (e) => { if (x0 != null && Math.abs(e.clientX - x0) > 8) moved = true; });
+  deck.addEventListener('pointerup', (e) => { if (x0 == null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 50) deckTo(dx < 0 ? 1 : -1); });
+  deck.addEventListener('click', (e) => {
+    if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; return; }
+    const c = e.target.closest('.dcard'); if (!c || c.dataset.pos === '0') return; e.preventDefault();
+    const n = deckEls().length, pos = (+c.dataset.i - D.cur + n) % n; if (pos === 1) deckTo(1); else if (pos === n - 1) deckTo(-1); else { D.cur = (+c.dataset.i - 1 + n) % n; deckTo(1); }
+  }, true);
+}

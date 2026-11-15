@@ -131,3 +131,24 @@ body.has-tray .buybar { bottom: 76px; }
 /* a11y fixes from the axe run */
 .topbar a { text-decoration: underline; text-underline-offset: 3px; }
 [data-theme="dark"] .mono-tile { background: #1D4A86; color: #FFC24A; }
+/* ---- featured deck (cards in a pile) ---- */
+.deck { position: relative; outline-offset: 6px; touch-action: pan-y; }
+.deck-stage { display: grid; padding: 0 44px 40px 0; }
+.dcard { grid-area: 1 / 1; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 0; background: var(--surface); border: 1px solid var(--hairline); border-radius: 18px; overflow: hidden; transform-origin: 10% 100%; transition: transform .45s var(--ease), opacity .45s var(--ease), box-shadow .45s; box-shadow: 0 1px 0 var(--hairline), 0 10px 30px rgba(8,24,48,.10); will-change: transform; }
+.dcard[data-pos="0"] { transform: none; opacity: 1; }
+.dcard[data-pos="1"] { transform: translate(22px, 20px) scale(.97); cursor: pointer; }
+.dcard[data-pos="2"] { transform: translate(44px, 40px) scale(.94); cursor: pointer; }
+.dcard[data-pos="3"] { transform: translate(44px, 40px) scale(.94); opacity: 0; pointer-events: none; }
+.dcard[data-pos="1"] > *, .dcard[data-pos="2"] > * { opacity: .0; } .dcard[data-pos="1"], .dcard[data-pos="2"] { background: var(--surface-2); }
+.dcard.fly { transform: translate(-115%, -6%) rotate(-12deg); opacity: 0; pointer-events: none; }
+.dcard.snap { transition: none; }
+.dcard > * { transition: opacity .3s; } .dcard[data-pos="0"] > * { opacity: 1; }
+.dcard-media { display: block; min-height: 340px; background: var(--surface-2); } .dcard-media .art-box, .dcard-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dcard-body { display: flex; flex-direction: column; gap: 10px; justify-content: center; padding: 32px 36px; min-width: 0; } .dcard-body h3 { font: 600 clamp(1.4rem, 2.6vw, 2rem)/1.15 var(--font-display); margin: 0; } .dlink { color: var(--text); } .dlink:hover { text-decoration: underline; } .dcard .btn.dlink { color: var(--brand-contrast); text-decoration: none; }
+.dprice { display: flex; flex-direction: column; gap: 2px; margin: 6px 0 2px; } .dact { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.deck-ctl { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 4px; } .deck-count { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 64px; text-align: center; font-size: 14px; }
+@media (max-width: 760px) { .dcard { grid-template-columns: 1fr; } .dcard-media { min-height: 0; aspect-ratio: 8 / 5; } .dcard-body { padding: 20px; } .deck-stage { padding: 0 22px 22px 0; } .dcard[data-pos="1"] { transform: translate(11px, 10px) scale(.98); } .dcard[data-pos="2"], .dcard[data-pos="3"] { transform: translate(22px, 20px) scale(.96); } }
+@media (prefers-reduced-motion: reduce) { .dcard, .dcard > * { transition: none; } }
+@media (max-width: 560px) { .supplier .go-t { display: none; } .supplier > span:nth-child(2) { min-width: 0; } }
+.dcard { align-self: start; min-width: 0; } .dcard-body h3 { overflow-wrap: anywhere; }
+@media (max-width: 760px) { .dcard-body h3 { font-size: 1.25rem; } .dcard-body { justify-content: flex-start; } }
