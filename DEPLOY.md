@@ -36,7 +36,7 @@ Staging notes
 Every push to `main` runs the tests, applies D1 migrations and deploys the Worker from GitHub's servers, so your phone's network no longer matters.
 
 One-time setup (all in a browser):
-1. **Create the D1 database** in the Cloudflare dashboard: Storage & Databases > D1 > Create, name it `bonashub`. Copy its Database ID into `wrangler.toml` (replace `REPLACE_WITH_D1_DATABASE_ID`). The ID is not a secret.
+1. **Database: already done.** `wrangler.toml` points at your existing Worker `bonas-hub-v2` and D1 database `bonashub` (ID d84022ed-a406-4b68-b455-977e51ad2ae7). Nothing to create.
 2. **Create an API token**: Cloudflare dashboard > My Profile > API Tokens > Create Token > "Edit Cloudflare Workers" template, then add the permission *Account > D1 > Edit*. Copy the token.
 3. **Find your Account ID**: Workers & Pages overview, right-hand side.
 4. **Add GitHub secrets**: repository > Settings > Secrets and variables > Actions > New repository secret:
