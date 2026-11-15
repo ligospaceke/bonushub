@@ -1,0 +1,23 @@
+# BonasHub v2 (staging first). Deploy with `npx wrangler deploy` after creating the D1 database.
+name = "bonas-hub-v2"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bonashub"
+database_id = "d84022ed-a406-4b68-b455-977e51ad2ae7"
+migrations_dir = "migrations"
+
+[triggers]
+crons = ["*/5 * * * *"]   # expires unpaid orders, auto-completes unconfirmed deliveries
+
+[vars]
+PAYMENT_PROVIDER = "sandbox"   # change to your licensed provider's adapter when it exists
+SANDBOX_ENABLED = "true"       # MUST be "false" (or removed) in production
+# Secrets (never in this file):  npx wrangler secret put PAYMENT_WEBHOOK_SECRET

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#12315C">
+<title>BonasHub: Connecting Businesses. Enabling Trade.</title>
+<meta name="description" content="Kenya's B2B marketplace for machinery, building materials, agricultural supplies and wholesale goods. Verified suppliers, quotations, secure payment and tracked orders.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22><rect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%2312315C%22/><text x=%2232%22 y=%2243%22 font-size=%2234%22 font-family=%22Arial%22 font-weight=%22700%22 text-anchor=%22middle%22 fill=%22%23F0A202%22>B</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<script>
+/* Runs before first paint: pick the saved theme, else the system preference, so there is no flash. */
+(function(){try{var t=localStorage.getItem('bh_theme');if(t!=='light'&&t!=='dark')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();
+</script>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/shop.css">
+</head>
+<body>
+<div id="boot-loader" role="status" aria-live="polite" aria-label="Loading BonasHub">
+  <div class="bl-mark"><span class="bl-ring"></span><span class="bl-b">B</span></div>
+  <div class="bl-word">Bonas<b>Hub</b></div>
+  <div class="bl-bar"><span></span></div>
+</div>
+<div id="route-bar" aria-hidden="true"></div>
+<a class="skip" href="#main">Skip to content</a>
+<div id="header"></div>
+<main id="main" tabindex="-1"><div id="view"></div></main>
+<div id="footer"></div>
+<div id="tray"></div>
+<div id="live" class="sr" role="status" aria-live="polite" aria-atomic="true"></div>
+<div id="toasts" aria-live="polite"></div>
+<div id="modal-root"></div>
+<noscript><p style="padding:24px">BonasHub needs JavaScript to browse the marketplace. Please enable it and reload.</p></noscript>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

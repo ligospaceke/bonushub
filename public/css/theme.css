@@ -1,0 +1,141 @@
+/* ==========================================================================
+   BonasHub THEME FILE. This is the ONLY file that defines the look:
+   colours, fonts, the boot loader, the animations and dark/light mode.
+   The values below are a STAND-IN until the original BonasHub theme is dropped in.
+   To restyle the whole site, replace the tokens in :root and [data-theme="dark"].
+   ========================================================================== */
+:root, [data-theme="light"] {
+  color-scheme: light;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+
+  --bg: #F6F7F9;
+  --surface: #FFFFFF;
+  --surface-2: #EEF1F5;
+  --text: #101828;
+  --muted: #566070;
+  --border: #D8DEE7;
+
+  --brand: #12315C;          /* primary: header, buttons, links */
+  --brand-hover: #0C2444;
+  --brand-contrast: #FFFFFF;
+  --link: #1B4F9C;
+  --accent: #F0A202;         /* calls to action, highlights */
+  --accent-hover: #FFB41F;
+  --accent-contrast: #1B1400;
+  --hero-from: #12315C;
+  --hero-to: #1D4A86;
+  --hero-text: #FFFFFF;
+  --hero-muted: #D3DEEF;
+
+  --ok: #17794A;   --ok-bg: #E2F3EA;
+  --warn: #8A5300; --warn-bg: #FCEFD2;
+  --bad: #B3261E;  --bad-bg: #FBE3E0;
+  --info: #1B4F9C; --info-bg: #E3EDFB;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.07);
+  --shadow-lg: 0 12px 40px rgba(16,24,40,.18);
+  --ph-a: #E7EAF0; --ph-b: #EEF1F6;
+  --ease: cubic-bezier(.2,.7,.2,1);
+  --art-bg: #E8EDF4; --art-ink: #1F4073; --art-mid: #9DB3D1; --art-grid: rgba(18,49,92,.07);
+  --scene-far: #1D4A86; --scene-mid: #153B6C; --scene-near: #0F2C52; --scene-ground: #0A2140;
+  --focus: #1B4F9C;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0C1117;
+  --surface: #151C25;
+  --surface-2: #1C2530;
+  --text: #E8ECF2;
+  --muted: #9AA5B4;
+  --border: #2A3542;
+
+  --brand: #3D6FB6;
+  --brand-hover: #4C80CB;
+  --brand-contrast: #FFFFFF;
+  --link: #8DB4F0;
+  --accent: #F2AE1F;
+  --accent-hover: #FFC442;
+  --accent-contrast: #1B1400;
+  --hero-from: #0F2441;
+  --hero-to: #17406F;
+  --hero-text: #F4F7FB;
+  --hero-muted: #B6C5DB;
+
+  --ok: #5CD08E;   --ok-bg: #12301F;
+  --warn: #F2C26B; --warn-bg: #33270E;
+  --bad: #FF8A80;  --bad-bg: #3A1714;
+  --info: #8DB4F0; --info-bg: #14263F;
+
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.6);
+  --ph-a: #1B2430; --ph-b: #222D3A;
+  --art-bg: #1A2531; --art-ink: #6F97D1; --art-mid: #3A5273; --art-grid: rgba(255,255,255,.05);
+  --scene-far: #17406F; --scene-mid: #113259; --scene-near: #0B2342; --scene-ground: #071A32;
+  --focus: #8DB4F0;
+}
+
+/* ---------- Boot loader (visible before any script runs) ---------- */
+#boot-loader {
+  position: fixed; inset: 0; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  background: var(--bg); color: var(--text); transition: opacity .45s ease, visibility .45s ease;
+}
+#boot-loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+.bl-mark { position: relative; width: 84px; height: 84px; display: grid; place-items: center; }
+.bl-ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--accent); animation: bh-spin 1s linear infinite; }
+.bl-b { width: 58px; height: 58px; border-radius: 16px; background: var(--brand); color: var(--accent); display: grid; place-items: center; font: 700 30px/1 var(--font-display); animation: bh-pop 1.6s ease-in-out infinite; }
+.bl-word { font: 700 26px/1 var(--font-display); letter-spacing: -.03em; }
+.bl-word b { color: var(--accent); }
+.bl-bar { width: 140px; height: 4px; border-radius: 4px; background: var(--border); overflow: hidden; }
+.bl-bar span { display: block; width: 40%; height: 100%; border-radius: 4px; background: var(--accent); animation: bh-slide 1.1s ease-in-out infinite; }
+
+/* ---------- Route progress bar ---------- */
+#route-bar { position: fixed; top: 0; left: 0; height: 3px; width: 0; z-index: 9000; background: var(--accent); opacity: 0; transition: width .3s ease, opacity .3s ease; }
+#route-bar.on { opacity: 1; width: 70%; transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+#route-bar.end { width: 100%; opacity: 0; transition: width .2s ease, opacity .4s ease .1s; }
+
+/* ---------- Keyframes ---------- */
+@keyframes bh-spin { to { transform: rotate(360deg); } }
+@keyframes bh-pop { 0%,100% { transform: scale(1); } 50% { transform: scale(.92); } }
+@keyframes bh-slide { 0% { transform: translateX(-120%); } 100% { transform: translateX(380%); } }
+@keyframes bh-fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes bh-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes bh-toast { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes bh-shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+@keyframes bh-grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes bh-pulse-ring { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } 100% { box-shadow: 0 0 0 14px transparent; } }
+
+.view-enter { animation: bh-fade-up .45s cubic-bezier(.2,.7,.2,1) both; }
+.stagger > * { animation: bh-fade-up .5s cubic-bezier(.2,.7,.2,1) both; }
+.stagger > *:nth-child(1) { animation-delay: .02s; } .stagger > *:nth-child(2) { animation-delay: .06s; } .stagger > *:nth-child(3) { animation-delay: .10s; }
+.stagger > *:nth-child(4) { animation-delay: .14s; } .stagger > *:nth-child(5) { animation-delay: .18s; } .stagger > *:nth-child(6) { animation-delay: .22s; }
+.stagger > *:nth-child(n+7) { animation-delay: .26s; }
+.skeleton { background: linear-gradient(90deg, var(--surface-2) 25%, var(--border) 37%, var(--surface-2) 63%); background-size: 800px 100%; animation: bh-shimmer 1.4s linear infinite; border-radius: var(--radius-sm); }
+.pulse { animation: bh-pulse-ring 1.6s ease-out infinite; }
+
+/* ---------- Home: entrance and scroll motion (runs once, never loops) ---------- */
+@keyframes bh-rise { from { opacity: 0; transform: translateY(var(--rise, 28px)); } to { opacity: 1; transform: none; } }
+@keyframes bh-sun { from { opacity: 0; transform: translateY(70px); } to { opacity: 1; transform: none; } }
+@keyframes bh-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes bh-line { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.in-up { animation: bh-rise .7s var(--ease) both; animation-delay: calc(var(--d, 0) * 1ms); }
+.hero .Lw { animation: bh-rise 1s var(--ease) both; --rise: 60px; animation-delay: calc(var(--l) * 140ms + 100ms); }
+.hero .sun { animation: bh-sun 1.3s var(--ease) both; animation-delay: .1s; }
+.rv { opacity: 0; transform: translateY(20px); transition: opacity .6s var(--ease), transform .6s var(--ease); transition-delay: calc(var(--i, 0) * 80ms); }
+.rv.in { opacity: 1; transform: none; }
+.rv-line { transform-origin: left; transform: scaleX(0); transition: transform .9s var(--ease); transition-delay: calc(var(--i, 0) * 80ms + 150ms); }
+.rv.in .rv-line, .rv-line.in { transform: scaleX(1); }
+.hero-route .fill { animation: bh-draw 1.4s var(--ease) 1.3s both; transform-origin: left; }
+.hero-route .dot { animation: bh-rise .5s var(--ease) 2.5s both; --rise: 0px; }
+@media (prefers-reduced-motion: reduce) { .rv, .rv-line { opacity: 1; transform: none; } }
+
+/* Smooth colour change when the theme switch is used */
+html.theme-fade, html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after { transition: background-color .3s ease, color .3s ease, border-color .3s ease, box-shadow .3s ease !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+  .bl-ring { animation: none; }
+}
